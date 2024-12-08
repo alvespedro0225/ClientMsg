@@ -1,5 +1,6 @@
 import socket
 from contextlib import contextmanager
+from .info import SERVER
 
 class ClientConnector:
 

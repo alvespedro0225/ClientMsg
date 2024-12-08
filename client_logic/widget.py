@@ -54,7 +54,7 @@ class Reminders(QtWidgets.QWidget):
         if self.validate_data(data):
             self.format_datetime(data)
             ClientConnector.send_message(data)
-            #self.confirmation()
+            self.confirmation()
 
 
     def confirmation(self):
@@ -99,7 +99,7 @@ class Reminders(QtWidgets.QWidget):
         send_date = data[1]
         try:
             send_date_dateclass = datetime.date(month=int(send_date[3:]), day=int(send_date[:2]), year=self.today.year)
-            if (send_date_dateclass <= self.today):
+            if (send_date_dateclass < self.today):
                 raise ValueError
             if not ((send_date[2] == '/') or (send_date[2] == '-')):
                 raise IndentationError

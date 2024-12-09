@@ -8,44 +8,46 @@ class Reminders(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super(Reminders, self).__init__(parent)
-        layout = QtWidgets.QVBoxLayout(self)
-        self.reciever = QtWidgets.QComboBox(self)
+        layout = QtWidgets.QVBoxLayout()
+        self.create_labeled_widget(QtWidgets.QComboBox(self), 'reciever', 'Recipiente: ')
         self.reciever.addItem('alvespedro0225@gmail.com')
         self.reciever.addItem('dak7alves74@gmail.com')
-        self.reciever_label = QtWidgets.QLabel('Recipiente:')
-        rec_layout = QtWidgets.QHBoxLayout()
-        rec_layout.addWidget(self.reciever_label)
-        rec_layout.addWidget(self.reciever)
-        self.send_date = QtWidgets.QLineEdit()
-        self.send_date_label = QtWidgets.QLabel('Data de envio (dd/mm)')
-        date_layout = QtWidgets.QHBoxLayout()
-        date_layout.addWidget(self.send_date_label)
-        date_layout.addWidget(self.send_date)
-        self.send_time = QtWidgets.QLineEdit()
-        self.send_time_label = QtWidgets.QLabel('Horario de envio: (hh:mm)')
-        time_layout = QtWidgets.QHBoxLayout()
-        time_layout.addWidget(self.send_time_label)   
-        time_layout.addWidget(self.send_time)   
-        self.subject = QtWidgets.QLineEdit()
-        self.subject_label = QtWidgets.QLabel('Assunto: ')
-        subject_layout = QtWidgets.QHBoxLayout()
-        subject_layout.addWidget(self.subject_label)
-        subject_layout.addWidget(self.subject)
-        self.message = QtWidgets.QPlainTextEdit()
-        self.message_label = QtWidgets.QLabel('Mensagem:')
+        rec_layout = self.create_hor_layout(self.reciever, self.reciever_label)
+        self.create_labeled_widget(QtWidgets.QLineEdit(), 'send_date', 'Data de envio: (dd/mm)')
+        date_layout = self.create_hor_layout(self.send_date, self.send_date_label)
+        self.create_labeled_widget(QtWidgets.QLineEdit(), 'send_time', 'Horario de envio: (hh:mm)')
+        time_layout = self.create_hor_layout(self.send_time, self.send_time_label)
+        self.create_labeled_widget(QtWidgets.QLineEdit(), 'subject', 'Assunto: ')
+        subject_layout = self.create_hor_layout(self.subject, self.subject_label)
+        self.create_labeled_widget(QtWidgets.QPlainTextEdit(), 'message', 'Mensagem')
         self.send = QtWidgets.QPushButton('Enviar')
         self.send.clicked.connect(self.send_data)
-        layout.addLayout(rec_layout)
-        layout.addLayout(date_layout)
-        layout.addLayout(time_layout)
-        layout.addLayout(subject_layout)
-        layout.addWidget(self.message_label)
-        layout.addWidget(self.message)
-        layout.addWidget(self.send)
+        self.configure_layout_layouts(layout, rec_layout, date_layout, time_layout, subject_layout)
+        self.configure_layout_widgets(layout, self.message_label, self.message, self.send)
         self.setLayout(layout)
         self.setWindowTitle('Lembretes')      
         self.resize(500, 300)
         self.today = datetime.date.today()
+
+    def create_hor_layout(self, widget:QtWidgets.QWidget, label:QtWidgets.QLabel):
+        hor_layout = QtWidgets.QHBoxLayout()
+        hor_layout.addWidget(label)
+        hor_layout.addWidget(widget)
+        return hor_layout
+    
+    def create_labeled_widget(self, widget:QtWidgets.QWidget, field_name:str, label_message:str):
+        label_name = f"{field_name}_label"
+        label = QtWidgets.QLabel(label_message)
+        setattr(self, field_name, widget)
+        setattr(self, label_name, label)
+
+    def configure_layout_widgets(self, layout:QtWidgets.QVBoxLayout, *args):
+        for widget in args:
+            layout.addWidget(widget)
+    
+    def configure_layout_layouts(self, layout:QtWidgets.QVBoxLayout, *args:QtWidgets.QHBoxLayout|QtWidgets.QVBoxLayout):
+        for widget in args:
+            layout.addLayout(widget)
 
     @Slot()
     def send_data(self):

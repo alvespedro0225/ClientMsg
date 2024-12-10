@@ -1,8 +1,9 @@
-from PySide6 import QtWidgets
-from PySide6.QtCore import Slot
 import sys
 import datetime
+from PySide6 import QtWidgets
+from PySide6.QtCore import Slot
 from .client_logic import ClientConnector
+
 
 class Reminders(QtWidgets.QWidget):
 
@@ -55,33 +56,45 @@ class Reminders(QtWidgets.QWidget):
         data = self.get_data()
         if self.validate_data(data):
             self.format_datetime(data)
-            ClientConnector.send_message(data)
-            self.confirmation()
-
+            if ClientConnector.send_message(data):
+                self.confirmation()
+            else:
+                pop_up = QtWidgets.QDialog(self)
+                layout = QtWidgets.QVBoxLayout(pop_up)
+                confirmation = QtWidgets.QPushButton('OK')
+                confirmation.clicked.connect(pop_up.accept)
+                text = QtWidgets.QPlainTextEdit('Não foi possivel conectar ao servidor')
+                text.setReadOnly(True)
+                layout.addWidget(text)
+                layout.addWidget(confirmation)
+                pop_up.setWindowTitle('Erro de Conexão')
+                pop_up.setLayout(layout)
+                pop_up.resize(200, 100)
+                pop_up.exec()
 
     def confirmation(self):
-            pop_up = QtWidgets.QDialog(self)
-            layout = QtWidgets.QVBoxLayout()
-            h_layout = QtWidgets.QHBoxLayout()
-            confirmation = QtWidgets.QPushButton('Agendar outra mensagem')
-            confirmation.clicked.connect(pop_up.accept)
-            text = QtWidgets.QPlainTextEdit('Mensagem agendada.')
-            closing = QtWidgets.QPushButton('Fechar')
-            closing.clicked.connect(quit)
-            text.setReadOnly(True)
-            layout.addWidget(text)
-            h_layout.addWidget(confirmation)
-            h_layout.addWidget(closing)
-            layout.addLayout(h_layout)
-            pop_up.setWindowTitle('Confirmaçao de Envio')
-            pop_up.setLayout(layout)
-            pop_up.resize(200, 100)
-            pop_up.exec()
-            if pop_up.result():
-                self.send_date.clear()
-                self.send_time.clear()
-                self.subject.clear()
-                self.message.clear()
+        pop_up = QtWidgets.QDialog(self)
+        layout = QtWidgets.QVBoxLayout()
+        h_layout = QtWidgets.QHBoxLayout()
+        confirmation = QtWidgets.QPushButton('Agendar outra mensagem')
+        confirmation.clicked.connect(pop_up.accept)
+        text = QtWidgets.QPlainTextEdit('Mensagem agendada.')
+        closing = QtWidgets.QPushButton('Fechar')
+        closing.clicked.connect(quit)
+        text.setReadOnly(True)
+        layout.addWidget(text)
+        h_layout.addWidget(confirmation)
+        h_layout.addWidget(closing)
+        layout.addLayout(h_layout)
+        pop_up.setWindowTitle('Confirmaçao de Envio')
+        pop_up.setLayout(layout)
+        pop_up.resize(200, 100)
+        pop_up.exec()
+        if pop_up.result():
+            self.send_date.clear()
+            self.send_time.clear()
+            self.subject.clear()
+            self.message.clear()
 
 
     
@@ -135,13 +148,12 @@ class Reminders(QtWidgets.QWidget):
             pop_up.exec()
             return False
         
-
-
         send_time = data[2]
         try:
             send_time_timeclass = datetime.time(hour=int(send_time[:2]), minute=int(send_time[3:]))
             if (send_time[2] != ':'):
                 raise IndentationError
+            
         except IndentationError:
             pop_up = QtWidgets.QDialog(self)
             layout = QtWidgets.QVBoxLayout(pop_up)
@@ -170,7 +182,7 @@ class Reminders(QtWidgets.QWidget):
             pop_up.setLayout(layout)
             pop_up.resize(200, 100)
             pop_up.exec()        
-            return False        
+            return False                 
 
         return True
     
@@ -182,7 +194,6 @@ class Reminders(QtWidgets.QWidget):
         data[2] = str(datetime.time(hour=int(send_time[:2]), minute=int(send_time[3:])))
 
         return data
-
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

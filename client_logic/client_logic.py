@@ -16,6 +16,10 @@ class ClientConnector:
 
     @classmethod
     def send_message(cls, message, server_address=SERVER):
-        with cls.socket_connect(server_address) as SOCKET:
-            for value in message:   
-                SOCKET.send(bytes((value+'ṕ'), 'UTF-8'))
+        try:
+            with cls.socket_connect(server_address) as SOCKET:
+                for value in message:   
+                    SOCKET.send(bytes((value+'ṕ'), 'UTF-8'))
+            return True
+        except ConnectionRefusedError:
+            return False

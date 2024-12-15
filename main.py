@@ -1,6 +1,9 @@
 import sys
 import datetime
-from PySide6.QtWidgets import (QVBoxLayout, QWidget, QComboBox, QLineEdit, QPlainTextEdit, QPushButton, QLabel, QHBoxLayout, QDialog, QApplication, QCalendarWidget)
+from PySide6.QtWidgets import (
+    QVBoxLayout, QWidget, QComboBox, QLineEdit, QPlainTextEdit,
+    QPushButton, QLabel, QHBoxLayout, QDialog, QApplication, QCalendarWidget
+    )
 from PySide6.QtCore import Slot
 from utils.client_logic import ClientConnector
 
@@ -31,8 +34,15 @@ class MainWindow(QWidget):
         self.buttons = QHBoxLayout()
         self.buttons.addWidget(self.send)
         self.buttons.addWidget(self.show_calendar)
-        self.configure_layout_layouts(layout, rec_layout, date_layout, time_layout, subject_layout)
-        self.configure_layout_widgets(layout, self.message_label, self.message)
+        self.configure_layout_layouts(
+            layout, rec_layout,
+            date_layout,
+            time_layout,
+            subject_layout)
+        self.configure_layout_widgets(
+            layout,
+            self.message_label,
+            self.message)
         self.configure_layout_layouts(layout, self.buttons)
         self.setLayout(layout)
         self.setWindowTitle('Lembretes')      
@@ -124,7 +134,10 @@ class MainWindow(QWidget):
     def validate_data(self, data:list[str]):
         send_date = data[1]
         try:
-            send_date_dateclass = datetime.date(month=int(send_date[3:]), day=int(send_date[:2]), year=self.today.year)
+            send_date_dateclass = datetime.date(
+                month=int(send_date[3:]),
+                day=int(send_date[:2]),
+                year=self.today.year)
             if (send_date_dateclass < self.today):
                 raise ValueError
             if not ((send_date[2] == '/') or (send_date[2] == '-')):
@@ -161,7 +174,7 @@ class MainWindow(QWidget):
         
         send_time = data[2]
         try:
-            send_time_timeclass = datetime.time(hour=int(send_time[:2]), minute=int(send_time[3:]))
+            datetime.time(hour=int(send_time[:2]), minute=int(send_time[3:]))
             if (send_time[2] != ':'):
                 raise IndentationError
             
@@ -201,8 +214,14 @@ class MainWindow(QWidget):
 
         send_date = data[1]
         send_time = data[2]
-        data[1] = str(datetime.date(month=int(send_date[3:]), day=int(send_date[:2]), year=self.today.year))
-        data[2] = str(datetime.time(hour=int(send_time[:2]), minute=int(send_time[3:])))
+        data[1] = str(datetime.date(
+            month = int(send_date[3:]),
+            day = int(send_date[:2]),
+            year = self.today.year))
+        data[2] = str(datetime.time(
+            hour = int(send_time[:2]),
+            minute = int(send_time[3:]
+            )))
 
         return data
 
